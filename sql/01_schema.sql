@@ -1,0 +1,12 @@
+-- 01_schema.sql
+-- Raw landing tables are loaded from CSV by src/etl.py (read_csv_auto) as:
+--   raw_accounts, raw_products, raw_sales_teams, raw_sales_pipeline
+-- This file documents the expected raw schema. The transformation layer lives
+-- in sql/staging/ (cleaning) and sql/marts/ (analytics-ready models).
+--
+-- raw_sales_pipeline  opportunity_id, sales_agent, product, account,
+--                     deal_stage, engage_date, close_date, close_value
+-- raw_accounts        account, sector, year_established, revenue, employees,
+--                     office_location, subsidiary_of
+-- raw_products        product, series, sales_price
+-- raw_sales_teams     sales_agent, manager, regional_office
