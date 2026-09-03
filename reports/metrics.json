@@ -1,0 +1,29 @@
+{
+  "opportunities_total": 8800,
+  "closed_deals": 8397,
+  "open_deals": 403,
+  "accounts": 85,
+  "agents": 30,
+  "total_won_revenue": 20864522,
+  "overall_win_rate": 0.4781,
+  "avg_cycle_days": 43.6,
+  "revenue_concentration_top20pct": 0.2696,
+  "best_sector": {
+    "sector": "technology",
+    "win_rate": 0.5826
+  },
+  "worst_sector": {
+    "sector": "marketing",
+    "win_rate": 0.3725
+  },
+  "forecast_backtest_mape": 0.2013,
+  "next_quarter_forecast": 2886711,
+  "weighted_open_pipeline": 789570,
+  "driver_model_auc": 0.602,
+  "segments": {
+    "Maintain": 26,
+    "Strategic": 22,
+    "Growth": 21,
+    "At-Risk": 16
+  }
+}
