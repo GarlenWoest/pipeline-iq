@@ -1,18 +1,17 @@
 # Pipeline IQ — B2B Revenue & CRM Analytics
 
-> End-to-end sales analytics on **8,800 CRM opportunities**: a SQL data model, RFM + K-means account segmentation, a **backtested revenue forecast**, and a win-driver model — surfaced in an executive dashboard with prioritized, dollar-quantified recommendations.
+Sales pipeline analytics on 8,800 CRM opportunities: a SQL data model, account
+segmentation, a backtested revenue forecast, and a model of what drives wins —
+plus a Power BI dashboard and a short set of recommendations.
 
 ![Monthly bookings with backtested next-quarter forecast](assets/01_revenue_forecast.png)
 
-<p>
-<img alt="Python" src="https://img.shields.io/badge/Python-3.9+-0E7C82">
-<img alt="SQL" src="https://img.shields.io/badge/SQL-DuckDB-0A5B60">
-<img alt="scikit-learn" src="https://img.shields.io/badge/ML-scikit--learn-B5632A">
-<img alt="Power BI" src="https://img.shields.io/badge/BI-Power%20BI-B7791F">
-<img alt="license" src="https://img.shields.io/badge/license-MIT-5C6B7E">
-</p>
+![Python](https://img.shields.io/badge/Python-3.9+-blue)
+![SQL](https://img.shields.io/badge/SQL-DuckDB-lightgrey)
+![Power BI](https://img.shields.io/badge/BI-Power%20BI-yellow)
 
-**The business question:** *Which segments, reps, and deals should the sales org double down on next quarter — and what revenue will we actually close?*
+**Question I set out to answer:** which segments, reps, and deals should the sales
+team focus on next quarter, and what will we actually close?
 
 ---
 
@@ -29,19 +28,20 @@
 | Open weighted pipeline | **$0.79M** |
 | Win-driver model | Cross-validated **ROC-AUC 0.60** |
 
-> **Recommendation in one line:** reallocate prospecting capacity from Marketing/Entertainment toward Technology, Software, and Enterprise-tier accounts — the win-driver model shows these lift win odds most — and protect the 27% of revenue concentrated in the top-tier accounts with named coverage.
-
-See the full [recommendation memo →](reports/recommendation_memo.md)
+**Short version of the recommendation:** move prospecting effort from the
+lowest-converting sectors (Marketing, Entertainment) toward Technology, Software,
+and larger accounts, and give the top accounts — which drive ~27% of revenue —
+named coverage. Full write-up in the [recommendation memo](reports/recommendation_memo.md).
 
 ---
 
-## What this project demonstrates
+## What's in it
 
-- **SQL data modeling** — a layered warehouse (staging → marts) built in DuckDB with CTEs, window functions, and a star schema (`fct_pipeline` + `dim_account`).
-- **Customer segmentation** — RFM scoring adapted to B2B, clustered with K-means (k chosen by silhouette score) into Strategic / Growth / Maintain / At-Risk tiers.
-- **Forecasting with honest validation** — two transparent models compared via **rolling-origin backtest**; the winner and its out-of-sample error drive the forecast band.
-- **Explanatory modeling** — a logistic win/loss model that ranks the real drivers of win rate (sector, deal size, account tier, region).
-- **BI delivery** — a Power BI-ready star-schema export and a 3-page executive dashboard spec.
+- **SQL model** — a staging → marts warehouse in DuckDB (CTEs, window functions, a `fct_pipeline` + `dim_account` star schema).
+- **Segmentation** — RFM adapted to B2B, clustered with K-means (k from silhouette score) into Strategic / Growth / Maintain / At-Risk tiers.
+- **Forecast** — two simple methods compared with a walk-forward backtest; the better one, plus its error, sets the forecast band.
+- **Win drivers** — a logistic model ranking what moves win rate (sector, deal size, account size, region).
+- **BI** — a Power BI star-schema export and a build guide for the dashboard.
 
 ---
 
@@ -101,14 +101,14 @@ python src/drivers.py           # win-driver model
 
 ## Data
 
-This repo ships with a **realistic synthetic dataset** (`src/generate_data.py`)
-that mirrors the schema of the free **[Maven Analytics "CRM Sales Opportunities"](https://www.mavenanalytics.io/data-playground)**
-dataset — four relational tables (`sales_pipeline`, `accounts`, `products`,
-`sales_teams`). It intentionally bakes in learnable structure (win rate varies by
-sector, rep, deal size, and account tier) so the analytics recover defensible
-patterns. **To run on the real data instead**, download the four Maven CSVs into
-`data/raw/` and skip `generate_data.py` — every downstream step reads the same
-file and column names.
+This repo includes a small data generator (`src/generate_data.py`) that builds
+sample CSVs in the same shape as the free [Maven Analytics "CRM Sales
+Opportunities"](https://www.mavenanalytics.io/data-playground) dataset — four
+tables (`sales_pipeline`, `accounts`, `products`, `sales_teams`) — so it runs
+without a download. Win rate in the sample data varies by sector, rep, deal size,
+and account size, so there's real structure for the analysis to find. To use the
+real data instead, download the four Maven CSVs into `data/raw/` and skip
+`generate_data.py`; everything downstream reads the same file and column names.
 
 ## Repository structure
 

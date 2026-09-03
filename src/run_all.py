@@ -1,17 +1,11 @@
-"""
-run_all.py
-==========
-One command to reproduce the whole project:
+"""Run the whole project with one command:  python src/run_all.py
 
-    python src/run_all.py
-
-Steps:
-  1. (re)generate synthetic data if the raw CSVs are missing
+  1. generate the data if it's missing
   2. build the DuckDB warehouse (staging -> marts)
-  3. run segmentation, forecasting, and the win-driver model
-  4. render all chart assets
-  5. export Power BI-ready star-schema CSVs
-  6. write reports/metrics.json (single source of truth for the README numbers)
+  3. run segmentation, the forecast, and the win-driver model
+  4. render the charts
+  5. export the Power BI CSVs
+  6. write reports/metrics.json (the numbers used in the README)
 """
 from __future__ import annotations
 

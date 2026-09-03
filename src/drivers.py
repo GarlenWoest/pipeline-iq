@@ -1,14 +1,6 @@
-"""
-drivers.py
-==========
-Win/loss driver model: a logistic regression over closed opportunities that
-quantifies WHAT moves win probability (deal size, sector, region, product
-series). Standardized coefficients give an at-a-glance ranking of drivers, and
-the ROC-AUC tells us how learnable win/loss is from these features.
-
-This turns descriptive reporting into a defensible "here's why deals are won"
-narrative — the kind of insight a sales VP acts on.
-"""
+"""Logistic regression over closed deals to see what moves win probability
+(deal size, sector, region, product series, account size). Coefficients rank the
+drivers; cross-validated ROC-AUC shows how predictable win/loss is."""
 from __future__ import annotations
 
 import numpy as np
@@ -46,7 +38,7 @@ def fit_driver_model(con=None) -> dict:
     model = Pipeline([("pre", pre),
                       ("clf", LogisticRegression(max_iter=1000, C=1.0))])
 
-    # Honest performance: cross-validated AUC (no train-on-test leakage).
+    # cross-validated AUC (no train-on-test leakage)
     proba = cross_val_predict(model, X, y, cv=5, method="predict_proba")[:, 1]
     auc = roc_auc_score(y, proba)
 

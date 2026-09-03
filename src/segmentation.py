@@ -1,18 +1,9 @@
-"""
-segmentation.py
-===============
-Account segmentation combining an RFM-style scorecard with K-means clustering.
-
-Because a B2B pipeline has no repeat "purchase recency" the way retail does, we
-adapt RFM to the sales context:
-    Recency   -> days since the account's most recent opportunity engaged
-    Frequency -> number of opportunities with the account
-    Monetary  -> total won revenue from the account
-
-We then cluster the standardized features with K-means (k chosen by silhouette
-score) and label each cluster with a business-friendly tier.
-
-Returns a DataFrame: one row per account with RFM scores, cluster, and tier.
+"""Segment accounts with RFM + K-means. RFM is adapted to B2B sales:
+    Recency   = days since the account's most recent opportunity
+    Frequency = number of opportunities with the account
+    Monetary  = total won revenue from the account
+Features are standardized and clustered with K-means (k picked by silhouette
+score); each cluster gets a business tier. Returns one row per account.
 """
 from __future__ import annotations
 
@@ -26,9 +17,8 @@ from sklearn.preprocessing import StandardScaler
 
 from etl import build_warehouse, table
 
-# KMeans' distance computation triggers spurious "divide by zero / overflow in
-# matmul" RuntimeWarnings under macOS's Accelerate BLAS. They are a known false
-# positive (results are correct); silence just that class of warning here.
+# KMeans triggers harmless "matmul" RuntimeWarnings on macOS (Accelerate BLAS);
+# results are fine, so quiet just those.
 warnings.filterwarnings("ignore", message=".*matmul.*", category=RuntimeWarning)
 
 

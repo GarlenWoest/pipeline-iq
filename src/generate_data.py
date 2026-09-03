@@ -1,24 +1,8 @@
-"""
-generate_data.py
-================
-Creates a realistic synthetic B2B sales-pipeline dataset that mirrors the schema
-of the free Maven Analytics "CRM Sales Opportunities" dataset, so this repo runs
-end-to-end with zero external downloads.
-
-To use the REAL data instead: download the four CSVs from Maven Analytics
-(sales_pipeline, accounts, products, sales_teams), drop them in data/raw/, and
-skip this script. The rest of the pipeline reads the same file/column names.
-
-Output (data/raw/):
-  accounts.csv        one row per customer account (firmographics)
-  products.csv        product catalog with list prices
-  sales_teams.csv     sales agents -> manager -> regional office
-  sales_pipeline.csv  one row per opportunity (the fact table)
-
-The generator intentionally bakes in *learnable* structure — win rate varies by
-sector, agent, and deal size; cycle length varies by product — so the analytics
-downstream surface real, defensible patterns rather than noise.
-"""
+"""Build sample CRM data (accounts, products, sales_teams, sales_pipeline) in the
+same shape as the Maven "CRM Sales Opportunities" dataset, so the project runs
+without a download. To use the real data, drop the four Maven CSVs into data/raw/
+and skip this script. Win rate here depends on sector, rep, deal size, and
+account size, so the analysis has something real to find."""
 from __future__ import annotations
 
 import numpy as np
@@ -101,11 +85,11 @@ def make_sales_teams(n_agents: int = 30) -> pd.DataFrame:
 
 
 def make_pipeline(accounts, products, teams, n: int = 8800) -> pd.DataFrame:
-    # Per-agent skill: a latent win-rate multiplier (some reps are just better).
+    # some reps win more than others
     agent_skill = {a: s for a, s in
                    zip(teams["sales_agent"],
                        RNG.normal(0.0, 0.08, len(teams)))}
-    # Enterprise accounts convert better (dedicated buying process); SMBs churn.
+    # bigger accounts convert a bit better
     band_effect = {"Enterprise": 0.06, "Mid-Market": 0.02, "SMB": -0.04}
 
     acc = accounts.set_index("account")
@@ -113,15 +97,14 @@ def make_pipeline(accounts, products, teams, n: int = 8800) -> pd.DataFrame:
     prod_list = products["product"].to_numpy()
     agent_list = teams["sales_agent"].to_numpy()
 
-    # Analysis window: a clean 24-month span. We assign each CLOSED deal a
-    # close-month first (so monthly bookings are mature, with no right-censoring
-    # ramp/tail artifact), then derive engage_date = close_date - cycle. Open
-    # deals are engaged near the snapshot end and have no close yet.
+    # 24-month window. Pick each closed deal's close month first (so monthly
+    # totals aren't dragged down by deals that haven't closed yet), then set
+    # engage_date = close_date - cycle. Open deals were engaged recently.
     window_start = pd.Timestamp("2024-01-01")
     n_months = 24
     month_starts = [window_start + pd.DateOffset(months=k) for k in range(n_months)]
     snapshot = month_starts[-1] + pd.offsets.MonthEnd(0)
-    # Close-month weights: gentle +1.2%/month growth trend x Q4 (Oct-Dec) bump.
+    # slight growth trend + a Q4 bump, so bookings aren't perfectly flat
     month_weight = np.array([
         (1 + 0.012 * k) * (1.15 if (window_start + pd.DateOffset(months=k)).month
                            in (10, 11, 12) else 1.0)
@@ -140,7 +123,7 @@ def make_pipeline(accounts, products, teams, n: int = 8800) -> pd.DataFrame:
                 else "Mid-Market" if acct_rev >= 1000 else "SMB")
         agent = RNG.choice(agent_list)
 
-        # --- win probability model (this is the signal analysts will recover) ---
+        # win probability from sector, rep, account size, and deal size
         base = 0.46
         p = base + 1.4 * SECTOR_WIN_BIAS[sector] + agent_skill[agent]
         p += band_effect[band]

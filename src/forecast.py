@@ -1,22 +1,14 @@
-"""
-forecast.py
-===========
-Forecasts next-quarter bookings and reports HONEST out-of-sample accuracy — the
-feature that separates this from a chart.
+"""Forecast next-quarter bookings two ways and report out-of-sample accuracy.
 
-Two forecasts, quoted together (as a real revenue-ops team would):
+1) Monthly won-revenue forecast. Two simple methods are compared with a
+   walk-forward backtest and the better one is kept:
+       - naive_3m     : trailing 3-month average
+       - linear_trend : degree-1 fit on the recent window
+   The backtest MAPE sets the forecast's +/- band.
 
-1) Statistical forecast of monthly won revenue. We compare two transparent
-   methods with a rolling-origin (walk-forward) backtest and keep the winner:
-       * seasonal/level baseline  -> trailing 3-month average
-       * linear-trend regression  -> degree-1 fit on the recent window
-   The backtest MAPE becomes the forecast's confidence band.
+2) Weighted-pipeline number: open opportunities x their stage win-probability.
 
-2) Weighted-pipeline forecast: sum of currently-open opportunities x their
-   stage win-probability — the pipeline-driven "commit" number.
-
-No heavy time-series dependency: methods are intentionally simple and robust so
-the backtest is trustworthy on ~2 years of monthly data.
+Kept simple on purpose so the backtest is trustworthy on ~2 years of data.
 """
 from __future__ import annotations
 
@@ -33,8 +25,7 @@ def _monthly_won(con) -> pd.Series:
     m = table(con, "kpi_monthly")
     m["activity_month"] = pd.to_datetime(m["activity_month"])
     s = m.set_index("activity_month")["revenue"].asfreq("MS").fillna(0.0)
-    # Drop any leading/trailing months with zero bookings (outside the active
-    # selling window); the interior is mature, so no ramp/censoring trim needed.
+    # trim empty months at the start/end (outside the selling window)
     nz = s[s > 0].index
     return s.loc[nz.min():nz.max()] if len(nz) else s
 

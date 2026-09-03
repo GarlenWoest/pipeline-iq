@@ -1,14 +1,9 @@
-"""
-etl.py
-======
-Builds the analytics warehouse: loads the four raw CSVs into DuckDB, then runs the
-SQL transformation layer (staging -> marts) in dependency order. Everything is a
-view, so the build is instant and always reflects the current CSVs.
+"""Load the four CSVs into DuckDB and run the SQL layer (staging -> marts) in
+order. Everything is a view, so the build is quick and always matches the CSVs.
 
-Public helpers:
-    build_warehouse(db_path)  -> duckdb.Connection with all models created
-    q(con, sql)               -> run ad-hoc SQL, return a DataFrame
-    table(con, name)          -> SELECT * FROM <model> as a DataFrame
+  build_warehouse(db_path) -> connection with all models built
+  q(con, sql)              -> run SQL, return a DataFrame
+  table(con, name)         -> SELECT * FROM <name> as a DataFrame
 """
 from __future__ import annotations
 

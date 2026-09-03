@@ -1,13 +1,5 @@
-"""
-viz.py
-======
-Renders the static chart assets used in the README and the recommendation memo.
-Uses matplotlib only (reliable PNG export, no browser/kaleido dependency).
-
-All figures share one visual system: a teal accent (matching the portfolio
-brand), a warm-copper highlight, tabular-friendly type, and generous whitespace,
-so the repo reads as a single designed product, not a pile of default plots.
-"""
+"""Render the PNG charts used in the README and the memo (matplotlib only).
+Shared colors and styling so the charts look consistent."""
 from __future__ import annotations
 
 import matplotlib
