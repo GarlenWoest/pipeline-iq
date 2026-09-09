@@ -57,4 +57,4 @@ it.
 1. Re-route Q+1 prospecting toward Technology/Software + Enterprise tier.
 2. Stand up named coverage for the 22 Strategic accounts.
 3. Add an At-Risk early-warning flag to the CRM.
-4. Re-forecast monthly and track MAPE to keep the quota defensible.
+4. Re-forecast monthly and track MAPE so the quota stays credible.
